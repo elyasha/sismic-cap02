@@ -24,8 +24,18 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 ; Main loop here
 ;-------------------------------------------------------------------------------
 
-                                            
+            call	#soma2
+            jmp		$
+            nop
 
+soma2:		mov.w	&DT, R10			; R10 = primeira palavra
+			add.w   &DT+2, R10			; Somar R10 com a segunda palavra
+			ret							; Retornar
+
+
+
+			.data
+DT:			.word	0x2233, 0x5544		; Inicializar posições
 ;-------------------------------------------------------------------------------
 ; Stack Pointer definition
 ;-------------------------------------------------------------------------------
