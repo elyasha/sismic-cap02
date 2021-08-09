@@ -23,7 +23,16 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 ;-------------------------------------------------------------------------------
 ; Main loop here
 ;-------------------------------------------------------------------------------
+; Usaremos agora a memória RAM do MSP que inicia em 0x2400. É pedido para
+; armazenar em R10 soma dos dois bytes que estão nas posições 0x2400 e 0x2401
 
+			mov.b &0x2400, R10
+			add.b &0x2401, R10
+			jmp   $
+			nop
+
+			.data
+DT:			.byte 0x33, 0x44 ; Inicializar posições 0x2400 e 0x2401
                                             
 
 ;-------------------------------------------------------------------------------
