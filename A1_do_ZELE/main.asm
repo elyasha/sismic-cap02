@@ -23,38 +23,29 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 ;-------------------------------------------------------------------------------
 ; Main loop here
 ;-------------------------------------------------------------------------------
+            MOV		#SEQTRIB, R5
+			MOV		#3, R6
+			CALL	#TRIB
+			JMP		$
+			NOP
 
-; Escreva a sub-rotina MENOR8, que armazena em R10 o menor elemento de um
-; vetor com números de 8 bits com sinal, cujo endereço está em R5.
-
-;  Sub-rotina MENOR:
-	;Recebe: R5 = endereço de início do vetor;
-	;Retorna: R10 = menor elemento do vetor.
-;Recursos a serem usados pela sub-rotina:
-	;R5 = ponteiro, inicia apontando para o início do vetor;
-	;R6 = contador, decrementado a cada iteração e
-	;R10 = maior elemento provisório, inicializado com 127 (maior positivo em 8 bits).
-
-
-	; Ambiente para testar sub-rotina MENOR8
-			MOV.W 	#vetor,R5  ;Ponteiro = endereço do vetor
-			CALL 	#MENOR8		;Chamar a sub-rotina a ser testada
-			JMP $ 				;Prender MSP
-
-        ;ER 2.13: Sub-rotina MENOR8
-
-MENOR8: 	MOV 		#127,R10 	;Menor elemento provisório = 127
-			MOV.B 		@R5+,R6 	;R6 = tamanho e incrementa R5
-LOOP: 		CMP.B 		@R5,R10 	;Comparar: R10 - @R5
-			JL 			LB 			;Se R10 < @R5, saltar para LB
-			MOV.B 		@R5,R10 	;Copiar novo menor para R10
-LB: 		INC.W 		R5 			;Avançar ponteiro
-			DEC.B 		R6 			;Decrementar contador
-			JNZ 		LOOP 		;Repetir se contador diferente de zero
-			RET 					;Retornar se contador igual a zero
+TRIB:		MOV		4(R5), R7
+			ADD		2(R5), R7
+			JC		FIM
+			ADD		2(R5), R7
+			JC		FIM
+			INC		R6
+			SUB		@R5+, R7
+			MOV		R7, 4(R5)
+			JMP		TRIB
+FIM			MOV		4(R5), R7
+			RET
 
 			.data
-vetor: 		.byte 4, -5, -20, 56, 127
+SEQTRIB:	.word	0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+			.word	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+			.word	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                                            
 
 ;-------------------------------------------------------------------------------
 ; Stack Pointer definition
